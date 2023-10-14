@@ -5,8 +5,42 @@ class Edit : public QWidget
 public:
   Edit()
   {
-    QLabel *label1 = new QLabel("EditText", this);
-    label1->show();
+// block
+    QLabel *label = new QLabel("Block IP-address", this);
+
+    QLineEdit *ipAddrEdit = new QLineEdit(this);
+    ipAddrEdit->setPlaceholderText("input IP");
+    ipAddrEdit->setMaxLength(15);
+    ipAddrEdit->setMaximumWidth(200);
+
+// handler
+    QObject::connect(ipAddrEdit, &QLineEdit::returnPressed, [=](){
+      qDebug() << "text: " << ipAddrEdit->text();
+      ipAddrEdit->clear();
+    });
+
+// unblock
+    QLabel *label2 = new QLabel("Unblock IP-address", this);
+
+    QLineEdit *ipAddrEdit2 = new QLineEdit(this);
+    ipAddrEdit2->setPlaceholderText("input IP");
+    ipAddrEdit2->setMaxLength(15);
+    ipAddrEdit2->setMaximumWidth(200);
+
+// handler2
+    QObject::connect(ipAddrEdit2, &QLineEdit::returnPressed, [=](){
+      qDebug() << "text2: " << ipAddrEdit2->text();
+      ipAddrEdit2->clear();
+    });
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(label);
+    layout->addWidget(ipAddrEdit);
+    layout->addSpacing(5);
+    layout->addWidget(label2);
+    layout->addWidget(ipAddrEdit2);
+    layout->addStretch(1);
+    setLayout(layout);
   }
 };
 

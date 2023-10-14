@@ -9,5 +9,6 @@
 #include <QDebug>
 #include <QVBoxLayout>
 #include <QTabWidget>
+#include <QLineEdit>
 
 #endif
