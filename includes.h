@@ -7,5 +7,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QDebug>
+#include <QVBoxLayout>
+#include <QTabWidget>
 
 #endif
