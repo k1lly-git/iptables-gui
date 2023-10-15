@@ -2,13 +2,17 @@
 
 class Edit : public QWidget
 {
+  QLabel *label;
+  QLabel *label2;
+  QLineEdit *ipAddrEdit;
+  QLineEdit *ipAddrEdit2;
 public:
   Edit()
   {
 // block
-    QLabel *label = new QLabel("Block IP-address", this);
+    label = new QLabel("Block IP-address", this);
 
-    QLineEdit *ipAddrEdit = new QLineEdit(this);
+    ipAddrEdit = new QLineEdit(this);
     ipAddrEdit->setPlaceholderText("input IP");
     ipAddrEdit->setMaxLength(15);
     ipAddrEdit->setMaximumWidth(200);
@@ -20,9 +24,9 @@ public:
     });
 
 // unblock
-    QLabel *label2 = new QLabel("Unblock IP-address", this);
+    label2 = new QLabel("Unblock IP-address", this);
 
-    QLineEdit *ipAddrEdit2 = new QLineEdit(this);
+    ipAddrEdit2 = new QLineEdit(this);
     ipAddrEdit2->setPlaceholderText("input IP");
     ipAddrEdit2->setMaxLength(15);
     ipAddrEdit2->setMaximumWidth(200);
@@ -42,70 +46,121 @@ public:
     layout->addStretch(1);
     setLayout(layout);
   }
+  ~Edit()
+  {
+    delete label;
+    delete ipAddrEdit;
+    delete label2;
+    delete ipAddrEdit2;
+  }
 };
 
 class Rules : public QWidget
 {
 public:
+  QLabel *label1;
+
   Rules()
   {
-    QLabel *label1 = new QLabel("RulesText", this);
+    label1 = new QLabel(this);
+    
+    FILE* pipe = popen("sudo iptables -S", "r");
+    char buff[1024];
+    std::string res;
+    while (fgets(buff, sizeof(buff), pipe) != NULL)
+    { res += buff; }
+    pclose(pipe);
+
+    label1->setText(QString::fromStdString(res));
     label1->show();
   }
+  ~Rules() { delete label1; }
 };
 
 class Reset : public QWidget
 {
+  QLabel *label1;
 public:
   Reset()
   {
-    QLabel *label1 = new QLabel("ResetText", this);
+    label1 = new QLabel("ResetText", this);
     label1->show();
   }
+  ~Reset() { delete label1; }
 };
 
 class Settings : public QWidget
 {
+  QLabel *label1;
 public:
   Settings()
   {
-    QLabel *label1 = new QLabel("SettingsText", this);
+    label1 = new QLabel("SettingsText", this);
     label1->show();
   }
+  ~Settings() { delete label1; }
 };
 
 class FAQ : public QWidget
 {
+  QLabel *label1;
 public:
   FAQ()
   {
-    QLabel *label1 = new QLabel("FAQText", this);
+    label1 = new QLabel("FAQText", this);
     label1->show();
   }
+  ~FAQ() { delete label1; }
 };
+
+class Window : public QMainWindow
+{
+public:
+  Window() { this->setGeometry(100, 100, 500, 400); }
+};
+
+class Tabs : public QTabWidget
+{
+  QWidget *editorTab, *rulesTab, *resetTab, *settingsTab, *faqTab;
+public:
+  Tabs(QWidget *parent) : QTabWidget(parent)
+  {
+    editorTab = new Edit();
+    rulesTab = new Rules();
+    resetTab = new Reset();
+    settingsTab = new Settings();
+    faqTab = new FAQ();
+
+    this->addTab(editorTab, "Editor");
+    this->addTab(rulesTab, "Rules");
+    this->addTab(resetTab, "Reset");
+    this->addTab(settingsTab, "Settings");
+    this->addTab(faqTab, "FAQ");
+  }
+};
+
+bool checkRoot()
+{
+  bool flag = true;
+  if (getuid() != 0)
+  {
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Error", "Run program with root");
+    msgBox->setAttribute(Qt::WA_DeleteOnClose);
+    msgBox->show();
+    flag = false;
+  }
+  return flag;
+}
 
 int main(int argc, char **argv)
 {
   QApplication app(argc, argv);
-  QMainWindow window;
+  if(!checkRoot()) { return app.exec(); }
+  Window window;
+ 
+  Tabs tabWidget(&window); 
 
-  window.setGeometry(100, 100, 500, 400);
-
-  QTabWidget *tabWidget = new QTabWidget(&window);
-
-  QWidget *editorTab = new Edit();
-  QWidget *rulesTab = new Rules();
-  QWidget *resetTab = new Reset();
-  QWidget *settingsTab = new Settings();
-  QWidget *faqTab = new FAQ();
-
-  tabWidget->addTab(editorTab, "Editor");
-  tabWidget->addTab(rulesTab, "Rules");
-  tabWidget->addTab(resetTab, "Reset");
-  tabWidget->addTab(settingsTab, "Settings");
-  tabWidget->addTab(faqTab, "FAQ");
-
-  window.setCentralWidget(tabWidget);
+  window.setCentralWidget(&tabWidget);
   window.setWindowTitle("iptables-gui");
   window.show();
 
