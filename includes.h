@@ -2,6 +2,11 @@
 #define INCLUDES_H
 
 #include <unistd.h>
+#include <iostream>
+#include <cstdio>
+#include <string>
+#include <sstream>
+#include <dirent.h>
 
 #include <QApplication>
 #include <QMainWindow>
@@ -13,10 +18,5 @@
 #include <QTabWidget>
 #include <QLineEdit>
 #include <QMessageBox>
-
-#include <iostream>
-#include <cstdio>
-#include <string>
-#include <sstream>
 
 #endif

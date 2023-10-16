@@ -52,8 +52,8 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = main.cpp 
-OBJECTS       = main.o
+SOURCES       = main.cpp functions.cpp 
+OBJECTS       = main.o functions.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt6/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt6/mkspecs/common/linux.conf \
@@ -120,7 +120,7 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt6/mkspecs/features/spec_pre.prf \
 		iptables-gui-project.pro  main.cpp
 QMAKE_TARGET  = iptables-gui-project
 DESTDIR       = 
-TARGET        = iptables-gui-project
+TARGET        = iptables-gui
 
 
 first: all
@@ -325,8 +325,11 @@ compiler_clean: compiler_moc_predefs_clean
 
 ####### Compile
 
-main.o: main.cpp includes.h 
+main.o: main.cpp includes.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
+
+functions.o: functions.cpp functions.h 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o functions.o functions.cpp
 
 ####### Install
 

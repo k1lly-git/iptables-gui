@@ -1,4 +1,5 @@
 #include <includes.h>
+#include <functions.h>
 
 class Edit : public QWidget
 {
@@ -79,14 +80,30 @@ public:
 
 class Reset : public QWidget
 {
-  QLabel *label1;
+  QPushButton *resetButton;
 public:
   Reset()
   {
-    label1 = new QLabel("ResetText", this);
-    label1->show();
+    QVBoxLayout *verticalLayout = new QVBoxLayout(this);
+    QHBoxLayout *horizontalLayout = new QHBoxLayout;
+
+    resetButton = new QPushButton("Reset Settings", this);
+    resetButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    horizontalLayout->addWidget(resetButton);
+    horizontalLayout->setAlignment(Qt::AlignHCenter);
+    verticalLayout->addStretch();
+    verticalLayout->addLayout(horizontalLayout);
+    verticalLayout->addStretch();
+    verticalLayout->setAlignment(Qt::AlignVCenter);
+
+    this->show();
+// handler
+    QObject::connect(resetButton, &QPushButton::clicked, [&](){
+        qDebug() << "reset";
+      });
   }
-  ~Reset() { delete label1; }
+  ~Reset() { delete resetButton; }
 };
 
 class Settings : public QWidget
@@ -139,23 +156,11 @@ public:
   }
 };
 
-bool checkRoot()
-{
-  bool flag = true;
-  if (getuid() != 0)
-  {
-    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning, "Error", "Run program with root");
-    msgBox->setAttribute(Qt::WA_DeleteOnClose);
-    msgBox->show();
-    flag = false;
-  }
-  return flag;
-}
-
 int main(int argc, char **argv)
 {
   QApplication app(argc, argv);
   if(!checkRoot()) { return app.exec(); }
+  getDefaultRules();
   Window window;
  
   Tabs tabWidget(&window); 
