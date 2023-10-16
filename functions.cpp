@@ -30,13 +30,15 @@ void getDefaultRules()
   if (!dirExists(CONF_DIR))
   {
     std::string dirname = "sudo mkdir ";
-    std::strcmp(dirname.c_str(), CONF_DIR);
+    dirname.append(CONF_DIR);
+    qDebug() << dirname.c_str();
     system(dirname.c_str());
     FILE* fileCheck = fopen(CONF_FILE, "r");
     if (fileCheck == NULL)
     {
       std::string filename = "sudo touch ";
-      std::strcmp(filename.c_str(), CONF_FILE);
+      filename.append(CONF_FILE);
+      qDebug() << filename.c_str();
       system(filename.c_str());
       FILE* file = fopen(CONF_FILE, "w");
       FILE* pipe = popen("sudo iptables -S", "r");
@@ -56,6 +58,8 @@ void getDefaultRules()
 
 void changeToDefaultRules()
 {
+  system("sudo iptables -F");
+  system("sudo iptables -X");
   FILE* file = fopen(CONF_FILE, "r");
   
   char buff[1024];
