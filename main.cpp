@@ -100,7 +100,8 @@ public:
     this->show();
 // handler
     QObject::connect(resetButton, &QPushButton::clicked, [&](){
-        qDebug() << "reset";
+        changeToDefaultRules();
+        qDebug() << "[+] reset";
       });
   }
   ~Reset() { delete resetButton; }
@@ -162,7 +163,7 @@ int main(int argc, char **argv)
   if(!checkRoot()) { return app.exec(); }
   getDefaultRules();
   Window window;
- 
+
   Tabs tabWidget(&window); 
 
   window.setCentralWidget(&tabWidget);

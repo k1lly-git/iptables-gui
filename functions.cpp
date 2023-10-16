@@ -27,14 +27,18 @@ bool dirExists(const std::string &dirname)
 
 void getDefaultRules()
 {
-  if (!dirExists("/opt/iptables-gui"))
+  if (!dirExists(CONF_DIR))
   {
-    system("sudo mkdir /opt/iptables-gui");
-    FILE* fileCheck = fopen("/opt/iptables-gui/default_rules.conf", "r");
+    std::string dirname = "sudo mkdir ";
+    std::strcmp(dirname.c_str(), CONF_DIR);
+    system(dirname.c_str());
+    FILE* fileCheck = fopen(CONF_FILE, "r");
     if (fileCheck == NULL)
     {
-      system("sudo touch /opt/iptables-gui/default_rules.conf");
-      FILE* file = fopen("/opt/iptables-gui/default_rules.conf", "w");
+      std::string filename = "sudo touch ";
+      std::strcmp(filename.c_str(), CONF_FILE);
+      system(filename.c_str());
+      FILE* file = fopen(CONF_FILE, "w");
       FILE* pipe = popen("sudo iptables -S", "r");
 
       char buff[1024];
@@ -48,4 +52,19 @@ void getDefaultRules()
     else
     { fclose(fileCheck); }
   }
+}
+
+void changeToDefaultRules()
+{
+  FILE* file = fopen(CONF_FILE, "r");
+  
+  char buff[1024];
+  while (fgets(buff, sizeof(buff), file) != NULL)
+  {
+    std::string resRule = "sudo iptables ";
+    std::string fullRule = resRule + buff;
+    if (fullRule[fullRule.length() - 1] == '\n') { fullRule[fullRule.length() - 1] = ' '; }
+    system(fullRule.c_str());
+  }
+  fclose(file);
 }
