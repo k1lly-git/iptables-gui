@@ -11,6 +11,7 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QWidget>
+#include <QStyleFactory>
 #include <QLabel>
 #include <QPushButton>
 #include <QDebug>
@@ -18,5 +19,6 @@
 #include <QTabWidget>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QRadioButton>
 
 #endif

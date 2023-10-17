@@ -9,5 +9,6 @@ bool checkRoot();
 bool dirExists(const std::string &dirname);
 void getDefaultRules();
 void changeToDefaultRules();
+void changeTheme(QApplication &app, QPalette &palette, const std::string &theme);
 
 #endif

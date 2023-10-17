@@ -1,6 +1,22 @@
 #include <includes.h>
 #include <functions.h>
 
+// Widgets style
+// this can move to the other .h file
+
+class myQLineEdit : public QLineEdit
+{
+public:
+  myQLineEdit(QWidget *parent = nullptr) : QLineEdit(parent)
+  {
+    this->setPlaceholderText("input IP");
+    this->setMaxLength(15);
+    this->setMaximumWidth(200);
+  }
+};
+
+// Widgets style
+
 class Edit : public QWidget
 {
   QLabel *label;
@@ -12,12 +28,7 @@ public:
   {
 // block
     label = new QLabel("Block IP-address", this);
-
-    ipAddrEdit = new QLineEdit(this);
-    ipAddrEdit->setPlaceholderText("input IP");
-    ipAddrEdit->setMaxLength(15);
-    ipAddrEdit->setMaximumWidth(200);
-
+    ipAddrEdit = new myQLineEdit(this);
 // handler
     QObject::connect(ipAddrEdit, &QLineEdit::returnPressed, [=](){
       qDebug() << "text: " << ipAddrEdit->text();
@@ -26,12 +37,7 @@ public:
 
 // unblock
     label2 = new QLabel("Unblock IP-address", this);
-
-    ipAddrEdit2 = new QLineEdit(this);
-    ipAddrEdit2->setPlaceholderText("input IP");
-    ipAddrEdit2->setMaxLength(15);
-    ipAddrEdit2->setMaximumWidth(200);
-
+    ipAddrEdit2 = new myQLineEdit(this);
 // handler2
     QObject::connect(ipAddrEdit2, &QLineEdit::returnPressed, [=](){
       qDebug() << "text2: " << ipAddrEdit2->text();
@@ -80,12 +86,14 @@ public:
 
 class Reset : public QWidget
 {
+  QVBoxLayout *verticalLayout;
+  QHBoxLayout *horizontalLayout;
   QPushButton *resetButton;
 public:
   Reset()
   {
-    QVBoxLayout *verticalLayout = new QVBoxLayout(this);
-    QHBoxLayout *horizontalLayout = new QHBoxLayout;
+    verticalLayout = new QVBoxLayout(this);
+    horizontalLayout = new QHBoxLayout();
 
     resetButton = new QPushButton("Reset Settings", this);
     resetButton->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -109,14 +117,32 @@ public:
 
 class Settings : public QWidget
 {
-  QLabel *label1;
+  QVBoxLayout *layout;
+  QRadioButton *radio_1;
+  QRadioButton *radio_2;
 public:
   Settings()
   {
-    label1 = new QLabel("SettingsText", this);
-    label1->show();
+    layout = new QVBoxLayout(this);
+    radio_1 = new QRadioButton("light", this);
+    radio_1->setChecked(true);
+    radio_2 = new QRadioButton("dark", this);
+    layout->addWidget(radio_1);
+    layout->addWidget(radio_2);
+    layout->addStretch();
+
+// handler
+    QObject::connect(radio_1, &QRadioButton::clicked, [=](){
+    QPalette palette;
+        changeTheme(*qApp, palette, "light");
+      });
+    QObject::connect(radio_2, &QRadioButton::clicked, [=](){
+    QPalette palette;
+        changeTheme(*qApp, palette, "dark");
+      });
+ 
   }
-  ~Settings() { delete label1; }
+  ~Settings() {}
 };
 
 class FAQ : public QWidget
@@ -160,6 +186,8 @@ public:
 int main(int argc, char **argv)
 {
   QApplication app(argc, argv);
+  app.setStyle(QStyleFactory::create("Fusion"));
+
   if(!checkRoot()) { return app.exec(); }
   getDefaultRules();
   Window window;
