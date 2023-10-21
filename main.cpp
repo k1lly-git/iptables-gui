@@ -31,6 +31,10 @@ public:
     ipAddrEdit = new myQLineEdit(this);
 // handler
     QObject::connect(ipAddrEdit, &QLineEdit::returnPressed, [=](){
+      QString resStr = "sudo iptables -A INPUT -s ";
+      resStr.append(ipAddrEdit->text());
+      resStr.append(" -j DROP");
+      system(resStr.toStdString().c_str());
       qDebug() << "text: " << ipAddrEdit->text();
       ipAddrEdit->clear();
     });
@@ -40,7 +44,11 @@ public:
     ipAddrEdit2 = new myQLineEdit(this);
 // handler2
     QObject::connect(ipAddrEdit2, &QLineEdit::returnPressed, [=](){
-      qDebug() << "text2: " << ipAddrEdit2->text();
+      QString resStr = "sudo iptables -D INPUT -s ";
+      resStr.append(ipAddrEdit2->text());
+      resStr.append(" -j DROP");
+      system(resStr.toStdString().c_str());
+      qDebug() << "text: " << ipAddrEdit2->text();
       ipAddrEdit2->clear();
     });
 
@@ -125,8 +133,18 @@ public:
   {
     layout = new QVBoxLayout(this);
     radio_1 = new QRadioButton("light", this);
-    radio_1->setChecked(true);
     radio_2 = new QRadioButton("dark", this);
+
+    std::string currentTheme = getTheme();
+    if (currentTheme == "light")
+    {
+      radio_1->setChecked(true);
+    }
+    else if (currentTheme == "dark")
+    {
+      radio_2->setChecked(true);
+    }
+
     layout->addWidget(radio_1);
     layout->addWidget(radio_2);
     layout->addStretch();
@@ -135,10 +153,12 @@ public:
     QObject::connect(radio_1, &QRadioButton::clicked, [=](){
     QPalette palette;
         changeTheme(*qApp, palette, "light");
+        saveTheme("light");
       });
     QObject::connect(radio_2, &QRadioButton::clicked, [=](){
     QPalette palette;
         changeTheme(*qApp, palette, "dark");
+        saveTheme("dark");
       });
  
   }
@@ -190,6 +210,10 @@ int main(int argc, char **argv)
 
   if(!checkRoot()) { return app.exec(); }
   getDefaultRules();
+  initTheme();
+  std::string startTheme = getTheme();
+  QPalette qpalette;
+  changeTheme(app, qpalette, startTheme);
   Window window;
 
   Tabs tabWidget(&window); 

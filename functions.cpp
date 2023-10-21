@@ -25,6 +25,43 @@ bool dirExists(const std::string &dirname)
   return flag;
 }
 
+void initTheme()
+{
+  FILE* themeFile = fopen(THEME_FILE, "r");
+  if (themeFile == NULL)
+  {
+    themeFile = fopen(THEME_FILE, "w");
+    fprintf(themeFile, "%s", "light");
+  }
+  fclose(themeFile);
+}
+
+std::string getTheme()
+{
+  FILE* themeFile = fopen(THEME_FILE, "r");
+  std::string themeName;
+  if (themeFile != NULL)
+  {
+    char buff[128];
+    while(fgets(buff, sizeof(buff), themeFile) != NULL)
+    {
+      themeName.append(buff);
+    }
+  }
+  fclose(themeFile);
+  return themeName;
+}
+
+void saveTheme(const std::string &themeName)
+{
+  FILE *themeFile = fopen(THEME_FILE, "w");
+  if (themeFile != NULL)
+  {
+    fwrite(themeName.c_str(), sizeof(char), themeName.length(), themeFile);
+  }
+  fclose(themeFile);
+}
+
 void getDefaultRules()
 {
   if (!dirExists(CONF_DIR))
